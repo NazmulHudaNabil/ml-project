@@ -1,0 +1,73 @@
+Render Deployment Guide for ml-project
+
+Project type:
+FastAPI application with a trained ML model and Jinja2 templates.
+
+Important files:
+- app.py
+- requirements.txt
+- templates/index.html
+- artifacts/model.pkl
+- artifacts/preprocessor.pkl
+
+1. Before deploying
+- Make sure the project runs locally with:
+  uvicorn app:app --reload
+- Confirm the trained model files exist in artifacts/.
+- If artifacts are missing, run the training pipeline locally first so model.pkl and preprocessor.pkl are created.
+- Make sure requirements.txt includes all dependencies used by the app and model pipeline.
+
+2. Push the project to GitHub
+- Create a GitHub repository for this project.
+- Push the full project folder to GitHub.
+- Include the artifacts folder if you want Render to use the already-trained model.
+
+3. Create a Render Web Service
+- Go to Render and sign in.
+- Click New + and choose Web Service.
+- Connect your GitHub repository.
+- Select the ml-project repository.
+
+4. Render settings
+Use these values:
+- Name: ml-project or any name you want
+- Environment: Python 3
+- Region: choose the closest region
+- Branch: main
+- Build Command:
+  pip install -r requirements.txt
+- Start Command:
+  uvicorn app:app --host 0.0.0.0 --port $PORT
+
+5. Deploy notes
+- Render will provide the PORT value automatically.
+- Do not use --reload in production.
+- The app must find the templates folder at runtime.
+- The app must find the artifacts folder at runtime.
+
+6. Common problems and fixes
+- If the home page returns an error, check that templates/index.html exists and that app.py uses Jinja2Templates correctly.
+- If /predict fails with file not found, confirm artifacts/model.pkl and artifacts/preprocessor.pkl are present in the deployed repo.
+- If prediction fails because of category mismatch, retrain the preprocessor with handle_unknown=ignore or use the updated saved artifact.
+- If Render fails during install, check requirements.txt for missing packages.
+
+7. Recommended workflow
+- Train the model locally.
+- Verify the artifacts folder contains the latest model files.
+- Push the code and artifacts to GitHub.
+- Deploy on Render with the build and start commands above.
+- Test these URLs after deployment:
+  /
+  /docs
+  /predict
+
+8. Final checklist
+- app.py exists at the repository root.
+- requirements.txt is present.
+- templates/index.html exists.
+- artifacts/model.pkl exists.
+- artifacts/preprocessor.pkl exists.
+- Start command uses uvicorn with $PORT.
+- Reload mode is disabled.
+
+If you want a safer deployment later, you can add a startup script or Dockerfile, but for Render the simple Python Web Service setup is enough for this project.

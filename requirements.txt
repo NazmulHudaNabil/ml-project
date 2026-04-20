@@ -7,4 +7,9 @@ scikit-learn
 xgboost
 catboost
 dill
+flask
+fastapi
+uvicorn 
+jinja2 
+python-multipart
 # -e .

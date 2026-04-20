@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Score Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a1a;
+      --ink-muted: #6b6b6b;
+      --ink-faint: #b0b0b0;
+      --surface: #faf9f7;
+      --card: #ffffff;
+      --accent: #c84b2f;
+      --accent-light: #fdf1ee;
+      --border: #e4e1db;
+      --success-bg: #f0f7f1;
+      --success: #2d7a3a;
+      --radius: 12px;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* ── header strip ── */
+    header {
+      background: var(--ink);
+      color: #fff;
+      padding: 0.6rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    header span { color: var(--accent); font-weight: 500; }
+
+    /* ── hero ── */
+    .hero {
+      padding: 4rem 1.5rem 2.5rem;
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--ink);
+      max-width: 560px;
+      margin: 0 auto 1rem;
+    }
+    .hero p {
+      font-size: 15px;
+      color: var(--ink-muted);
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    /* ── stat row ── */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      max-width: 480px;
+      margin: 2rem auto 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--card);
+    }
+    .stat {
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--ink);
+    }
+    .stat-lbl {
+      font-size: 11px;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 3px;
+    }
+
+    /* ── form card ── */
+    .form-wrap {
+      max-width: 620px;
+      margin: 2.5rem auto 4rem;
+      padding: 0 1rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 12px; color: var(--ink-muted); letter-spacing: 0.03em; }
+
+    select, input[type="number"] {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b6b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+    select:focus, input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(200,75,47,0.1);
+    }
+
+    .score-row { margin-bottom: 1.5rem; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0 1.25rem;
+    }
+
+    /* ── submit button ── */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      position: relative;
+    }
+    .btn:hover { background: #2e2e2e; }
+    .btn:active { transform: scale(0.99); }
+    .btn:disabled { background: var(--ink-faint); cursor: not-allowed; transform: none; }
+
+    /* ── result ── */
+    .result-box {
+      display: none;
+      margin-top: 1.25rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--success-bg);
+      border: 1px solid #c3e0c7;
+      border-radius: 8px;
+      animation: fadeIn 0.3s ease;
+    }
+    .result-tag {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--success);
+      margin-bottom: 4px;
+    }
+    .result-score {
+      font-family: 'DM Serif Display', serif;
+      font-size: 40px;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .result-grade {
+      font-size: 13px;
+      color: var(--ink-muted);
+      margin-top: 4px;
+    }
+
+    /* ── error ── */
+    .error-box {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--accent-light);
+      border: 1px solid #f0c4bb;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ── loader dots ── */
+    .dots { display: inline-flex; gap: 4px; vertical-align: middle; margin-left: 6px; }
+    .dot { width: 5px; height: 5px; border-radius: 50%; background: #fff; animation: bounce 0.9s infinite ease-in-out; }
+    .dot:nth-child(2) { animation-delay: 0.15s; }
+    .dot:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 520px) {
+      .grid2 { grid-template-columns: 1fr; }
+      .stats { flex-direction: column; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  ML pipeline &nbsp;/&nbsp; <span>student performance</span>
+</header>
+
+<div class="hero">
+  <span class="eyebrow">Regression model</span>
+  <h1>Predict student math performance</h1>
+  <p>Enter a student's background and test scores to get an instant math score prediction from our trained model.</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">7</div>
+      <div class="stat-lbl">Features</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">1 000</div>
+      <div class="stat-lbl">Samples</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">FastAPI</div>
+      <div class="stat-lbl">Backend</div>
+    </div>
+  </div>
+</div>
+
+<div class="form-wrap">
+  <div class="card">
+
+    <p class="section-label">Student background</p>
+
+    <div class="grid2">
+      <div class="field">
+        <label for="gender">Gender</label>
+        <select id="gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="race">Race / Ethnicity</label>
+        <select id="race">
+          <option value="group a">Group A</option>
+          <option value="group b">Group B</option>
+          <option value="group c" selected>Group C</option>
+          <option value="group d">Group D</option>
+          <option value="group e">Group E</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field score-row">
+      <label for="education">Parental level of education</label>
+      <select id="education">
+        <option value="some high school">Some high school</option>
+        <option value="high school">High school</option>
+        <option value="some college" selected>Some college</option>
+        <option value="associate's degree">Associate's degree</option>
+        <option value="bachelor's degree">Bachelor's degree</option>
+        <option value="master's degree">Master's degree</option>
+      </select>
+    </div>
+
+    <div class="grid2">
+      <div class="field">
+        <label for="lunch">Lunch type</label>
+        <select id="lunch">
+          <option value="standard" selected>Standard</option>
+          <option value="free/reduced">Free / Reduced</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="prep">Test preparation course</label>
+        <select id="prep">
+          <option value="none">None</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+    <p class="section-label">Other test scores</p>
+
+    <div class="grid2 score-row">
+      <div class="field">
+        <label for="reading">Reading score (0–100)</label>
+        <input type="number" id="reading" min="0" max="100" value="70"/>
+      </div>
+      <div class="field">
+        <label for="writing">Writing score (0–100)</label>
+        <input type="number" id="writing" min="0" max="100" value="68"/>
+      </div>
+    </div>
+
+    <button class="btn" id="predictBtn" onclick="runPredict()">
+      Predict math score
+    </button>
+
+    <div class="result-box" id="resultBox">
+      <div class="result-tag">Predicted math score</div>
+      <div class="result-score" id="scoreVal">—</div>
+      <div class="result-grade" id="scoreGrade"></div>
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+
+  </div>
+</div>
+
+<script>
+  async function runPredict() {
+    const btn       = document.getElementById('predictBtn');
+    const resultBox = document.getElementById('resultBox');
+    const errorBox  = document.getElementById('errorBox');
+
+    errorBox.style.display  = 'none';
+    resultBox.style.display = 'none';
+
+    const reading = parseInt(document.getElementById('reading').value);
+    const writing = parseInt(document.getElementById('writing').value);
+
+    if (isNaN(reading) || isNaN(writing) || reading < 0 || reading > 100 || writing < 0 || writing > 100) {
+      errorBox.textContent    = 'Reading and writing scores must be between 0 and 100.';
+      errorBox.style.display  = 'block';
+      return;
+    }
+
+    btn.disabled  = true;
+    btn.innerHTML = 'Predicting<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+
+    const payload = {
+      gender:                       document.getElementById('gender').value,
+      race_ethnicity:               document.getElementById('race').value,
+      parental_level_of_education:  document.getElementById('education').value,
+      lunch:                        document.getElementById('lunch').value,
+      test_preparation_course:      document.getElementById('prep').value,
+      reading_score:                reading,
+      writing_score:                writing,
+    };
+
+    try {
+      const res  = await fetch('/predict', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.detail || 'Prediction failed');
+
+      const score = Math.round(data.preds);
+      const grade = score >= 90 ? '🏆 Excellent'
+                  : score >= 75 ? '✓ Good'
+                  : score >= 60 ? '~ Average'
+                  : '↓ Needs improvement';
+
+      document.getElementById('scoreVal').textContent   = score + ' / 100';
+      document.getElementById('scoreGrade').textContent = grade;
+      resultBox.style.display = 'block';
+
+    } catch (err) {
+      errorBox.textContent   = err.message || 'Could not reach the prediction server.';
+      errorBox.style.display = 'block';
+    } finally {
+      btn.disabled  = false;
+      btn.innerHTML = 'Predict math score';
+    }
+  }
+</script>
+</body>
+</html>
