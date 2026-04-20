@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 import pandas as pd
 
 from typing import Annotated
@@ -13,15 +14,17 @@ from src.utils import load_object
 class PredictPipeline:
     def predict(self, features):
         try:
-            model_path = os.path.join("artifacts", "model.pkl")
-            preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
+            project_root = Path(__file__).resolve().parents[2]
+            artifacts_dir = project_root / "artifacts"
+            model_path = artifacts_dir / "model.pkl"
+            preprocessor_path = artifacts_dir / "preprocessor.pkl"
 
             # fallback fix
-            if not os.path.exists(preprocessor_path):
-                preprocessor_path = os.path.join("artifacts", "proprocessor.pkl")
+            if not preprocessor_path.exists():
+                preprocessor_path = artifacts_dir / "proprocessor.pkl"
 
-            model = load_object(model_path)
-            preprocessor = load_object(preprocessor_path)
+            model = load_object(str(model_path))
+            preprocessor = load_object(str(preprocessor_path))
 
             # safer encoder handling
             try:
